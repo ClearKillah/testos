@@ -9,8 +9,11 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies with verbose logging
-RUN npm install --legacy-peer-deps --verbose
+# Clean npm cache and install dependencies
+RUN npm cache clean --force && \
+    rm -rf node_modules && \
+    npm install --legacy-peer-deps --verbose && \
+    npm install ajv@8.12.0 ajv-keywords@5.1.0 --save
 
 # Copy project files
 COPY . .
