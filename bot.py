@@ -6,6 +6,7 @@ from aiohttp import web
 import logging
 from aiogram.enums import ParseMode
 import asyncio
+from aiogram.client.default import DefaultBotProperties
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -14,8 +15,11 @@ logging.basicConfig(level=logging.INFO)
 BOT_TOKEN = "8039344227:AAEDCP_902a3r52JIdM9REqUyPx-p2IVtxA"
 WEBAPP_URL = "https://testos-production.up.railway.app"
 
-# Инициализация бота и диспетчера
-bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
+# Инициализация бота и диспетчера с новым синтаксисом
+bot = Bot(
+    token=BOT_TOKEN,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+)
 dp = Dispatcher()
 
 # Создаем веб-приложение
