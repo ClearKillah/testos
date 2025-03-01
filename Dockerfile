@@ -1,39 +1,31 @@
 # Build stage for React app
-FROM node:18-alpine as react-build
-
-# Увеличиваем память для Node
-ENV NODE_OPTIONS=--max_old_space_size=4096
+FROM node:18-alpine as builder
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Clean npm cache and install dependencies
-RUN npm cache clean --force && \
-    rm -rf node_modules && \
-    npm install --legacy-peer-deps --verbose && \
-    npm install ajv@8.12.0 ajv-keywords@5.1.0 --save
+# Install dependencies
+RUN npm install --legacy-peer-deps
 
 # Copy project files
 COPY . .
 
 # Build the app
-RUN CI=false npm run build
+RUN npm run build
 
-# Serve stage
-FROM node:18-alpine
+# Production stage
+FROM nginx:alpine
 
-WORKDIR /app
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Install serve
-RUN npm install -g serve
-
-# Copy built app
-COPY --from=react-build /app/build ./build
+# Copy built files from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
 
 # Expose port
 EXPOSE 8080
 
-# Start command
-CMD ["serve", "-s", "build", "-l", "8080"] 
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"] 
