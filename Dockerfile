@@ -1,7 +1,7 @@
 # Build stage for React app
 FROM node:18-alpine as react-build
 
-WORKDIR /app/frontend
+WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
@@ -15,23 +15,22 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Python stage
+# Production stage
 FROM python:3.9-slim
 
 WORKDIR /app
 
-# Copy Python requirements
-COPY requirements.txt .
-COPY bot.py .
+# Copy Python requirements and bot
+COPY requirements.txt bot.py ./
 
 # Install Python dependencies
 RUN pip install -r requirements.txt
 
-# Copy built React app
-COPY --from=react-build /app/frontend/build ./frontend/build
+# Copy built React app from build stage
+COPY --from=react-build /app/build ./static
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
+# Expose port
+EXPOSE 8080
 
 # Start command
 CMD ["python", "bot.py"] 
