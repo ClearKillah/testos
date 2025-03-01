@@ -2,6 +2,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #f0f2f5;
 }
 
 .chat-container {
@@ -12,4 +13,20 @@
   margin: 0 auto;
   padding: 20px;
   width: 100%;
+  gap: 1rem;
+}
+
+.search-btn {
+  padding: 1rem;
+  background: #0088cc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.search-btn:hover {
+  background: #006699;
 } 
