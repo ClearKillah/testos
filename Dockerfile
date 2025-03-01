@@ -1,19 +1,22 @@
 # Build stage for React app
 FROM node:18-alpine as react-build
 
+# Увеличиваем память для Node
+ENV NODE_OPTIONS=--max_old_space_size=4096
+
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
+# Install dependencies with verbose logging
+RUN npm install --legacy-peer-deps --verbose
 
 # Copy project files
 COPY . .
 
-# Build the app
-RUN npm run build
+# Build the app with verbose output
+RUN CI=false npm run build
 
 # Production stage
 FROM python:3.9-slim
