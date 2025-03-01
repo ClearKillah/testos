@@ -1,6 +1,10 @@
 #!/bin/bash
-# Start nginx in background
-nginx -g 'daemon off;' &
 
-# Start Python bot
-python bot.py 
+# Активируем виртуальное окружение
+source /opt/venv/bin/activate
+
+# Запускаем nginx в фоне
+nginx
+
+# Запускаем бота
+cd /app && python bot.py 

@@ -20,12 +20,6 @@ dp = Dispatcher()
 # Создаем веб-приложение
 app = web.Application()
 
-# Простой эндпоинт для проверки работоспособности
-async def health_check(request):
-    return web.Response(text='Bot is running')
-
-app.router.add_get('/health', health_check)
-
 # Обработчик команды /start
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
@@ -68,17 +62,11 @@ async def handle_message(message: types.Message):
         )
         await message.answer("Используйте кнопку ниже для доступа к чату:", reply_markup=keyboard)
 
-async def start_bot():
-    try:
-        await dp.start_polling(bot, skip_updates=True)
-    except Exception as e:
-        logging.error(f"Ошибка при запуске бота: {e}")
-
 async def on_startup(app):
-    asyncio.create_task(start_bot())
+    # Запускаем бота при старте приложения
+    asyncio.create_task(dp.start_polling(bot, skip_updates=True))
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 3000))
-    logging.info(f"Запуск бота на порту {port}")
+    # Настраиваем и запускаем приложение
     app.on_startup.append(on_startup)
-    web.run_app(app, host='0.0.0.0', port=port) 
+    web.run_app(app, host='0.0.0.0', port=3000) 
