@@ -20,24 +20,11 @@ dp = Dispatcher()
 # Создаем веб-приложение
 app = web.Application()
 
-# Настройка статических файлов
-current_dir = os.path.dirname(os.path.abspath(__file__))
-static_dir = os.path.join(current_dir, "static")
+# Простой эндпоинт для проверки работоспособности
+async def health_check(request):
+    return web.Response(text='Bot is running')
 
-# Функция для обработки корневого маршрута
-async def handle_root(request):
-    return web.FileResponse(os.path.join(static_dir, 'index.html'))
-
-# Добавляем маршруты
-app.router.add_get('/', handle_root)
-app.router.add_static('/', static_dir)
-
-# Обработчик для всех остальных маршрутов (для React Router)
-async def handle_any(request):
-    return web.FileResponse(os.path.join(static_dir, 'index.html'))
-
-# Добавляем маршрут для всех остальных путей
-app.router.add_get('/{tail:.*}', handle_any)
+app.router.add_get('/health', health_check)
 
 # Обработчик команды /start
 @dp.message(Command("start"))
@@ -61,7 +48,6 @@ async def cmd_start(message: types.Message):
     
     await message.answer(welcome_text, reply_markup=keyboard)
 
-# Обработчик для получения данных из веб-приложения
 @dp.message()
 async def handle_message(message: types.Message):
     if message.web_app_data:
@@ -92,7 +78,7 @@ async def on_startup(app):
     asyncio.create_task(start_bot())
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 8080))
-    logging.info(f"Запуск приложения на порту {port}")
+    port = int(os.getenv('PORT', 3000))
+    logging.info(f"Запуск бота на порту {port}")
     app.on_startup.append(on_startup)
     web.run_app(app, host='0.0.0.0', port=port) 
