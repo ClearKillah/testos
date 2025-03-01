@@ -13,7 +13,9 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Build the app
-RUN npm run build && ls -la build/
+RUN npm run build && \
+    echo "Contents of build directory:" && \
+    ls -la build/
 
 # Production stage
 FROM nginx:stable
@@ -45,9 +47,12 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 RUN mkdir -p /var/log/nginx /var/cache/nginx /var/run && \
     chmod -R 777 /var/log/nginx /var/cache/nginx /var/run
 
-# Copy built app and verify
+# Copy built app and set permissions
 COPY --from=builder /app/build /usr/share/nginx/html
-RUN ls -la /usr/share/nginx/html
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html && \
+    echo "Contents of nginx html directory:" && \
+    ls -la /usr/share/nginx/html
 
 # Copy bot files
 COPY bot.py ./
