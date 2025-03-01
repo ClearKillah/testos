@@ -4,9 +4,7 @@ from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
 from aiohttp import web
 import logging
-from aiogram.enums import ParseMode
 import asyncio
-from aiogram.client.default import DefaultBotProperties
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -15,11 +13,8 @@ logging.basicConfig(level=logging.INFO)
 BOT_TOKEN = "8039344227:AAEDCP_902a3r52JIdM9REqUyPx-p2IVtxA"
 WEBAPP_URL = "https://testos-production.up.railway.app"
 
-# Инициализация бота и диспетчера с новым синтаксисом
-bot = Bot(
-    token=BOT_TOKEN,
-    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-)
+# Инициализация бота и диспетчера
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 # Создаем веб-приложение
@@ -35,7 +30,6 @@ app.router.add_static('/', static_dir, show_index=True)
 # Обработчик команды /start
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    # Создаем inline кнопку для открытия веб-приложения
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(
@@ -45,9 +39,8 @@ async def cmd_start(message: types.Message):
         ]
     )
     
-    # Приветственное сообщение
     welcome_text = (
-        "👋 <b>Добро пожаловать в Анонимный Чат!</b>\n\n"
+        "👋 Добро пожаловать в Анонимный Чат!\n\n"
         "🔒 Здесь вы можете общаться анонимно и безопасно.\n"
         "👤 Найдите собеседника по интересам\n"
         "🔄 Меняйте собеседника одним нажатием\n\n"
@@ -61,14 +54,12 @@ async def cmd_start(message: types.Message):
 async def handle_message(message: types.Message):
     if message.web_app_data:
         try:
-            # Логируем полученные данные
             logging.info(f"Получены данные: {message.web_app_data.data}")
             await message.answer("✅ Данные успешно получены!")
         except Exception as e:
             logging.error(f"Ошибка при обработке данных: {e}")
             await message.answer("❌ Произошла ошибка при обработке данных")
     else:
-        # Для обычных сообщений отправляем напоминание
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
                 [InlineKeyboardButton(
