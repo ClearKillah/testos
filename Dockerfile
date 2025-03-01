@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy project files
 COPY . .
@@ -20,11 +20,20 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Copy Python requirements and bot
-COPY requirements.txt bot.py ./
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python requirements first
+COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy bot file
+COPY bot.py .
 
 # Copy built React app from build stage
 COPY --from=react-build /app/build ./static

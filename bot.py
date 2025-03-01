@@ -77,17 +77,10 @@ async def start_bot():
         logging.error(f"Ошибка при запуске бота: {e}")
 
 async def on_startup(app):
-    # Запускаем бота при старте приложения
     asyncio.create_task(start_bot())
 
 if __name__ == '__main__':
-    # Получаем порт из переменной окружения
     port = int(os.getenv('PORT', 8080))
-    
     logging.info(f"Запуск приложения на порту {port}")
-    
-    # Добавляем обработчик запуска
     app.on_startup.append(on_startup)
-    
-    # Запускаем веб-сервер
     web.run_app(app, host='0.0.0.0', port=port) 
