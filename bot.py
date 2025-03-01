@@ -24,8 +24,20 @@ app = web.Application()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(current_dir, "static")
 
-# Добавляем маршрут для статических файлов
-app.router.add_static('/', static_dir, show_index=True)
+# Функция для обработки корневого маршрута
+async def handle_root(request):
+    return web.FileResponse(os.path.join(static_dir, 'index.html'))
+
+# Добавляем маршруты
+app.router.add_get('/', handle_root)
+app.router.add_static('/', static_dir)
+
+# Обработчик для всех остальных маршрутов (для React Router)
+async def handle_any(request):
+    return web.FileResponse(os.path.join(static_dir, 'index.html'))
+
+# Добавляем маршрут для всех остальных путей
+app.router.add_get('/{tail:.*}', handle_any)
 
 # Обработчик команды /start
 @dp.message(Command("start"))
